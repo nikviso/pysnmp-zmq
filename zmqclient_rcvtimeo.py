@@ -78,7 +78,7 @@ def main(config_params):
     # json_reqest = json.dumps({'request': 'get_mac_table','community': 'dude','host': '192.168.205.220','exclude_interfaces':['25','26','0']})
     #
     # Gets interfaces and bridge indexes mapping. Only for COSCO
-    json_reqest = json.dumps({'request': 'get_ifnterface_map_table','community': 'dude','host': '192.168.205.184','exclude_interfaces':['25','26','0']})
+    json_reqest = json.dumps({'request': 'get_ifnterface_map_table','community': 'dude','host': '192.168.205.220'})
 
     socket.send(AESobj.encrypt(json_reqest))
     

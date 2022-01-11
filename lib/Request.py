@@ -205,11 +205,10 @@ class Request(object):
                     for brindex, ifindex in list_ifindex.items():
                         if not check_dict.get(brindex):
                             check_dict[brindex] = ifindex
-                            total_out.append([brindex, dic_ifname[ifindex]])    
+                            total_out.append([int(brindex), dic_ifname[ifindex]])    
             check_dict.clear()    
 
-            return(total_out)
-            # return{"get_ifnterface_map_table":"done"}
+            return(sorted(total_out, key=lambda x:x[0]))
         except Exception as e:
             return {"error": str(e)}
 
