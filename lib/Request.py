@@ -185,8 +185,26 @@ class Request(object):
             oid_if_name = config_params['oids_mac_table']['ifname']
             oid_if_index = config_params['oids_mac_table']['dot1dbaseportifindex']
             oid_vlan_id = config_params['oids_mac_table']['vtpvlanstate']
-            total_out = []
+            oid_sysname = config_params['oids_mac_table']['sysname']
             check_dict = {}
+            total_out = [] 
+            cmdGen = cmdgen.CommandGenerator()
+
+            errorIndication, errorStatus, errorIndex, varBinds = cmdGen.getCmd(
+                 cmdgen.CommunityData(snmp_ro_comm),
+                 cmdgen.UdpTransportTarget((host, 161)),
+                 oid_sysname,
+                 lookupNames=True, lookupValues=True
+            ) 
+
+            if errorIndication:
+                return(errorIndication)
+            elif errorStatus:
+                return('%s at %s' % (errorStatus.prettyPrint(),
+                                    errorIndex and varBinds[int(errorIndex)-1][0] or '?'))
+            else:
+                for varBind in varBinds:
+                    total_out.append([0,[x.prettyPrint() for x in varBind][1],host])
            
             dic_ifname = dict(self.cisco_ifname_ifindex(host, snmp_ro_comm, oid_if_name))  # Get interface name by ifIndex,ifname
             if dic_ifname.get('error'):
