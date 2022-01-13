@@ -155,6 +155,33 @@ def cisco_mac_per_interface(host, snmp_community, oid, vlan_id = '1', exclude_in
                     # print(list_mac_out)
     return(total_out)
 
+                
+def cisco_interface_name():
+    """
+    Get interface name
+    """
+    
+    for errorIndication, errorStatus, \
+        errorIndex, varBinds in bulkCmd(
+            SnmpEngine(),
+            CommunityData(snmp_community),
+            UdpTransportTarget((host, 161)),
+            ContextData(),
+            0, 50,  # GETBULK specific: request up to 50 OIDs in a single response
+            ObjectType(ObjectIdentity(if_name)),
+            lookupMib=False, lexicographicMode=False):
+
+        if errorIndication:
+            return {"error": errorIndication}
+        elif errorStatus:
+            return {"error": ('%s at %s' % (errorStatus.prettyPrint(),
+                                errorIndex and varBinds[int(errorIndex)-1][0] or '?'))}
+        else:
+            list_ifname_out = []
+            for varBind in varBinds:
+                list_ifname_out = ([x.prettyPrint().replace(if_name+'.', '') for x in varBind])
+                print(list_ifname_out)
+
     
 def cisco_ifname_ifindex(host, snmp_community, oid, vlan_id = '1'):
     """
@@ -187,37 +214,11 @@ def cisco_ifname_ifindex(host, snmp_community, oid, vlan_id = '1'):
                 # print(list_out)
     return(total_out)
 
-                
-def cisco_interface_name():
-    """
-    Get interface name
-    """
-    
-    for errorIndication, errorStatus, \
-        errorIndex, varBinds in bulkCmd(
-            SnmpEngine(),
-            CommunityData(snmp_community),
-            UdpTransportTarget((host, 161)),
-            ContextData(),
-            0, 50,  # GETBULK specific: request up to 50 OIDs in a single response
-            ObjectType(ObjectIdentity(if_name)),
-            lookupMib=False, lexicographicMode=False):
-
-        if errorIndication:
-            return {"error": errorIndication}
-        elif errorStatus:
-            return {"error": ('%s at %s' % (errorStatus.prettyPrint(),
-                                errorIndex and varBinds[int(errorIndex)-1][0] or '?'))}
-        else:
-            list_ifname_out = []
-            for varBind in varBinds:
-                list_ifname_out = ([x.prettyPrint().replace(if_name+'.', '') for x in varBind])
-                print(list_ifname_out)
-
 
 def main():
-    #host = '192.168.205.184'                            # CISCO
-    host = '192.168.205.221'                           # D-Link
+    # host = '192.168.205.184'                            # CISCO
+    host = '192.168.218.2'                              # CISCO
+    # host = '192.168.205.221'                            # D-Link
     snmp_community = 'dude'
     oid_dlink = '1.3.6.1.2.1.17.7.1.2.2.1.2'            # D-Link oid
     oid_vlan_id = '1.3.6.1.4.1.9.9.46.1.3.1.1.2'
@@ -229,10 +230,12 @@ def main():
     total_out = []
     
     # D-Link
-    return(dlink_mac_table(host, snmp_community, oid_dlink, exclude_interfaces))
+    # return(dlink_mac_table(host, snmp_community, oid_dlink, exclude_interfaces))
+    return(cisco_ifname_ifindex(host, snmp_community, oid_if_name, vlan_id = '1'))
     
     # CISCO
-    # return{'error':'test-error'}    
+    # return{'error':'test-error'}
+    
     """
     dic_ifname = dict(cisco_ifname_ifindex(host, snmp_community, oid_if_name))  # Get interface name by ifIndex
     if dic_ifname.get('error'):

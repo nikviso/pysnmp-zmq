@@ -29,7 +29,7 @@ class Request(object):
             )
 
             if errorIndication:
-                return {"error": errorIndication}
+                return {"error": '%s' % errorIndication}
             elif errorStatus:
                 return {"error": ('%s at %s' % (errorStatus.prettyPrint(),
                                     errorIndex and varBinds[int(errorIndex)-1][0] or '?'))}
@@ -75,7 +75,7 @@ class Request(object):
                     lookupMib=False, lexicographicMode=False):
 
                 if errorIndication:
-                    return(errorIndication)
+                    return('%s' % errorIndication)
                 elif errorStatus:
                     return('%s at %s' % (errorStatus.prettyPrint(),
                                         errorIndex and varBinds[int(errorIndex)-1][0] or '?'))
@@ -159,10 +159,10 @@ class Request(object):
             )
             
             if errorIndication:
-                return(errorIndication)
+                return{"error": '%s' % errorIndication}
             elif errorStatus:
-                return('%s at %s' % (errorStatus.prettyPrint(),
-                                    errorIndex and varBinds[int(errorIndex)-1][0] or '?'))
+                return{"error": ('%s at %s' % (errorStatus.prettyPrint(),
+                                    errorIndex and varBinds[int(errorIndex)-1][0] or '?'))}
             else:
                 for varBind in varBinds:
                     if 'cisco' in [x.prettyPrint() for x in varBind][1].lower():
@@ -198,10 +198,10 @@ class Request(object):
             ) 
 
             if errorIndication:
-                return(errorIndication)
+                return{"error": '%s' % errorIndication}
             elif errorStatus:
-                return('%s at %s' % (errorStatus.prettyPrint(),
-                                    errorIndex and varBinds[int(errorIndex)-1][0] or '?'))
+                return{"error": ('%s at %s' % (errorStatus.prettyPrint(),
+                                    errorIndex and varBinds[int(errorIndex)-1][0] or '?'))}
             else:
                 for varBind in varBinds:
                     total_out.append([0,[x.prettyPrint() for x in varBind][1],host])
@@ -251,7 +251,7 @@ class Request(object):
                     lookupMib=False, lexicographicMode=False):
 
                 if errorIndication:
-                    return {"error": errorIndication}
+                    return {"error": '%s' % errorIndication}
                 elif errorStatus:
                     return {"error": ('%s at %s' % (errorStatus.prettyPrint(),
                                         errorIndex and varBinds[int(errorIndex)-1][0] or '?'))}
@@ -280,12 +280,12 @@ class Request(object):
                     CommunityData(snmp_ro_comm + '@' + vlan_id),
                     UdpTransportTarget((host, 161)),
                     ContextData(),
-                    0, 50,  # GETBULK specific: request up to 50 OIDs in a single response
+                    0, 100,  # GETBULK specific: request up to 50 OIDs in a single response
                     ObjectType(ObjectIdentity(oid)),
                     lookupMib=False, lexicographicMode=False):
 
                 if errorIndication:
-                    return {"error": errorIndication}
+                    return {"error": '%s' % errorIndication}
                 elif errorStatus:
                     return {"error": ('%s at %s' % (errorStatus.prettyPrint(),
                                         errorIndex and varBinds[int(errorIndex)-1][0] or '?'))}
@@ -323,12 +323,12 @@ class Request(object):
                     CommunityData(snmp_ro_comm + '@' + vlan_id),
                     UdpTransportTarget((host, 161)),
                     ContextData(),
-                    0, 50,  # GETBULK specific: request up to 50 OIDs in a single response
+                    0, 100,  # GETBULK specific: request up to 50 OIDs in a single response
                     ObjectType(ObjectIdentity(oid)),
                     lookupMib=False, lexicographicMode=False):
 
                 if errorIndication:
-                    return {"error": errorIndication}
+                    return {"error": '%s' % errorIndication}
                 elif errorStatus:
                     return {"error": ('%s at %s' % (errorStatus.prettyPrint(),
                                         errorIndex and varBinds[int(errorIndex)-1][0] or '?'))}
@@ -360,7 +360,7 @@ class Request(object):
         or
         Get interface name by ifIndex
         """
-        
+
         total_out = []
         
         try:
@@ -370,12 +370,12 @@ class Request(object):
                     CommunityData(snmp_ro_comm + '@' + vlan_id),
                     UdpTransportTarget((host, 161)),
                     ContextData(),
-                    0, 50,  # GETBULK specific: request up to 50 OIDs in a single response
+                    0, 100,  # GETBULK specific: request up to 50 OIDs in a single response
                     ObjectType(ObjectIdentity(oid)),
                     lookupMib=False, lexicographicMode=False):
 
                 if errorIndication:
-                    return {"error": errorIndication}
+                    return {"error": '%s for community %s' % (errorIndication,snmp_ro_comm + '@' + vlan_id)}
                 elif errorStatus:
                     return {"error": ('%s at %s' % (errorStatus.prettyPrint(),
                                         errorIndex and varBinds[int(errorIndex)-1][0] or '?'))}
@@ -383,7 +383,7 @@ class Request(object):
                     for varBind in varBinds:
                         list_out = ([x.prettyPrint().replace(oid + '.', '') for x in varBind])
                         total_out.append(list_out)
-  
+
             return(total_out)
         except Exception as e:
             return {"error": str(e)}
