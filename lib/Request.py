@@ -186,6 +186,10 @@ class Request(object):
             oid_if_index = config_params['oids_mac_table']['dot1dbaseportifindex']
             oid_vlan_id = config_params['oids_mac_table']['vtpvlanstate']
             oid_sysname = config_params['oids_mac_table']['sysname']
+            if 'exclude_vlans' in json_dict:
+                exclude_vlans = json_dict['exclude_vlans']
+            else:    
+                exclude_vlans = []            
             check_dict = {}
             total_out = [] 
             cmdGen = cmdgen.CommandGenerator()
@@ -210,7 +214,7 @@ class Request(object):
             if dic_ifname.get('error'):
                 return(dic_ifname)
 
-            list_vlan_id = self.cisco_vlan_id(host, snmp_ro_comm, oid_vlan_id)
+            list_vlan_id = self.cisco_vlan_id(host, snmp_ro_comm, oid_vlan_id, exclude_vlans)
             if 'error' in list_vlan_id:
                 return(list_vlan_id)
             
@@ -232,7 +236,7 @@ class Request(object):
 
 
     @staticmethod
-    def cisco_vlan_id(host, snmp_ro_comm, oid):
+    def cisco_vlan_id(host, snmp_ro_comm, oid, exclude_vlans = []):
         """
         Get VLAN's id
         """
@@ -258,7 +262,8 @@ class Request(object):
                 else:
                     for varBind in varBinds:
                         list_vlan_id = ([x.prettyPrint().replace(oid + '.1.', '') for x in varBind])
-                        total_out.append(list_vlan_id[0])
+                        if list_vlan_id[0] not in exclude_vlans: 
+                            total_out.append(list_vlan_id[0])
 
             return(total_out)
         except Exception as e:
