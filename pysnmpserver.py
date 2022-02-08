@@ -22,7 +22,8 @@ def args_parse():
     """
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('-c', default='config.ini')
+    parser.add_argument('-c', default=os.path.dirname(__file__) + '/config.ini', \
+                        help='config file: /path/to/config.ini',  metavar='')
     args = parser.parse_args()
 
     return args
